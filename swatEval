@@ -1,0 +1,7 @@
+# Use r to evaluate goodness of fit of a model output
+install.packages("hydroGOF")
+library(hydroGOF)
+
+#The fields representing the observed and simulated values
+gof(NileStudy$Obs,NileStudy$Sim)
+
