@@ -30,8 +30,58 @@ KGClimateClass(areaBox = areaBox, updatedBy = "Kottek", verbose = TRUE)
 
 # Locating GRDC sites for Ethiopia
 GRDC_catalogue_all <- catalogueGRDC()
+
+# Filter GRDC catalogue based on a country code
+GRDC_ET <- catalogueGRDC(columnName = "country_code", columnValue = "ET")
+
+# Filter GRDC catalogue based on rivername
+GRDC_catalogue_river <- catalogueGRDC(columnName = "river", columnValue = "Blue nile")
+
+# Filter GRDC catalogue based on numerical value, for instance select all the stations for which daily data is available since 2000
+GRDC_catalogue_dstart <- catalogueGRDC(columnName = "d_start", columnValue = ">=2000")
+
+# Define a bounding box
+areaBox <- raster::extent(36, 42, 3, 15)
+
+# Filter GRDC catalogue based on a bounding box
+GRDC_catalogue_bbox <- catalogueGRDC(areaBox = areaBox)
+
+# Visualise outlets on an interactive map
+library(leaflet)
+leaflet(data = GRDC_catalogue_bbox_stats) %>%
+addTiles() %>%
+addMarkers(~long, ~lat, popup = ~station)
+
 hydro <- SpatialPointsDataFrame(coords = GRDC_ET[, c("long", "lat")], data = GRDC_ET)
+
+# Filter GRDC catalogue based on rivername, search is not case sensitive!
+Abay <- catalogueGRDC(columnName = "river", columnValue = "Blue Nile")
+
+# Convert the table to a SpatialPointsDataFrame
+AbaySP <- SpatialPointsDataFrame(coords = Abay[, c("long", "lat")], data = Abay)
+
+# Highight in red the stations on the Abay River
+plot(Ethiopia, col = NA, border = "darkgrey")
+plot(hydro, add = TRUE, col = "blue", pch = 1)
+plot(AbaySP, add = TRUE, col = "red", pch = 1)
 
 # Plot maps
 plot(Ethiopia, col = NA, border = "darkgrey")
 plot(hydro, add = TRUE, col = "blue", pch = 1)
+
+# Filter GRDC stations with more than 50 years of recordings
+GRDC50 <- catalogueGRDC(columnName = "d_yrs", columnValue = ">50")
+
+Roseires <- tsGRDC(stationID = 1663800, plotOption = TRUE)
+
+Adaitu <- tsGRDC(stationID = 1577602, plotOption = TRUE)
+
+MelkaSedi <- tsGRDC(stationID = 1663800, plotOption = TRUE)
+
+# Define a temporal extent
+twindow <- seq(as.Date("2016-01-01"), as.Date("2016-03-31"), by = "months")
+
+# Retrieve mean monthly precipitations based on a bounding box and time extent
+TRMMfile <- TRMM(twindow = twindow, areaBox = areaBox)
+
+plot(TRMMfile)
