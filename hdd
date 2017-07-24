@@ -11,7 +11,7 @@ library("hddtools")
 library(raster)
 
 # Boundary shape file for Ethiopia
-Ethiopia<-getData("GDAM", country = "ET", level =0)
+Ethiopia<-getData("GADM", country = "ET", level =0)
 
 # Point feature for Bahir Dar
 Bdar<-SpatialPoints(coords = data.frame(x=37.385219, y=11.590070))
